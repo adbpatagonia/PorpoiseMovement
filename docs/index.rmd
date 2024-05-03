@@ -2,6 +2,7 @@
 title: "SMRU Consulting. Porpoise movement"
 author: 'adb'
 date: "May 2024"
+bibliography:  porpoise_movement.bib 
 theme: jekyll-theme-slate
 output:
   html_document:
@@ -15,37 +16,67 @@ output:
     toc_float: yes
 ---
 
-```{=html}
-<style type="text/css">
+<!-- ```{=html} -->
 
-body{ /* Normal  */
-      font-size: 13px;
-  }
-td {  /* Table  */
-  font-size: 13px;
-}
-h1.title {
-  font-size: 24px;
-  color: Black;
-}
-h1 { /* Header 1 */
-  font-size: 19px;
-  color: Black;
-}
-h2 { /* Header 2 */
-    font-size: 15px;
-  color: Black;
-}
-h3 { /* Header 3 */
-    font-size: 15px;
-  color: Black;
-}
-</style>
-```
+<!-- <style type="text/css"> -->
+
+<!-- body{ /* Normal  */ -->
+
+<!--       font-size: 13px; -->
+
+<!--   } -->
+
+<!-- td {  /* Table  */ -->
+
+<!--   font-size: 13px; -->
+
+<!-- } -->
+
+<!-- h1.title { -->
+
+<!--   font-size: 24px; -->
+
+<!--   color: Black; -->
+
+<!-- } -->
+
+<!-- h1 { /* Header 1 */ -->
+
+<!--   font-size: 19px; -->
+
+<!--   color: Black; -->
+
+<!-- } -->
+
+<!-- h2 { /* Header 2 */ -->
+
+<!--     font-size: 15px; -->
+
+<!--   color: Black; -->
+
+<!-- } -->
+
+<!-- h3 { /* Header 3 */ -->
+
+<!--     font-size: 15px; -->
+
+<!--   color: Black; -->
+
+<!-- } -->
+
+<!-- </style> -->
+
+<!-- ``` -->
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 # library(cmdstanr)
+```
+
+```{r source analysis,  include=FALSE}
+library(here)
+source(here("analysis", "0_StepLength.r"))
 ```
 
 # Overview
@@ -54,3 +85,65 @@ This short document provides some details on the porpoise movement model develop
 
 Code and data to reproduce the analyses summarized in this document can be found in [**this repository**](https://github.com/adbpatagonia/PorpoiseMovement).
 
+# Step length and turning angles
+
+@nabe-nielsen2013 presented distributions of step lengths and turning angles at a 30 minute resolution. The original data was collected at a frequency of 6 seconds in @wilson2007. Without having the original dataset, I am not sure how to scale up the distribution presented at 30-minute interval to a daily time scale.
+
+I did a quick search and found three tagging studies for harbour porpoise:
+
+-   @read1997: tagged 9 porpoises in the Bay of Fundy and Gulf of Maine - data is available for 8 porpoises
+
+-   @nielsen2013: tagged two female porpoises in West Greenland - data available for both
+
+-   @sveegaard2011: tagged 64 harbour porpoises between 1997 and 2007, in order to determine the distribution in the North Sea, the western Baltic, and the waters in between. This dataset is used in several publications, but I could not find the data itself.
+
+I harvested the data from the two papers that have available data, and compare below their distributions to the distribution of step length and turing angles presented in @stalder2020 (subset of 57 porpoises from the @sveegaard2011 study).
+
+## Stalder *et al.* 2020 data
+
+Note that the data is data is:
+
+-   at a daily time step\
+-   discriminated by behaviour:
+    -   Area-restricted movement
+    -   Directed movement
+    -   Uncertain
+
+we will not discriminate by behaviour in this exercise, and therefore we only need one distribution that should resemble the mean daily movement
+
+![](Stalder_fig2.PNG "Stalder et al. 2020")
+
+## Harvested data
+
+I created these distributions using data from @read1997 and @nielsen2013.
+
+### Step length
+
+I extracted the `mean` and `var` of daily displacements from these data, and calculated the parameters of a gamma distribution as:
+
+$$scale = Var(x)/E[x]$$ $$shape = E[x]^2/Var(x)$$ Using these parameters, I drew random step lengths from a gamma distribution.
+
+```{r cpas, echo = FALSE, message = FALSE}
+print(p.dists )
+```
+
+### Turning Angle
+
+I drew turning angles from a von Mises distribution. Given that the time step is daily, I allowed the agents to go in any direction (360°).
+
+```{r angle, fig.width  = 8, fig.height = 4, echo=FALSE, message=FALSE, warning=FALSE}
+p.angles
+```
+
+## Comparison
+
+At first sight, it seems like the distribution created from the harvested data resembles the distribution presented in @stalder2020. However, please note this passage from @nielsen2013: *"The average daily travel rates for the two harbour porpoises were 24 km (range 0.6 -- 103 km, SD=21.9) and 42 km (range 1.9 -- 118.7 km, SD=25.2), respectively, which are in the same range of harbour porpoises from Bay of Fundy (range 13.9 -- 58.5 km, SD=13.9), Canada (Read & Westgate 1997) but slightly higher NAMMCO SC/20/HP/08 Harbour porpoise working group November 20133 than found for the North Sea (20.4 kmd-1) and the Baltic Sea (15.4 km d-1) (Sveegaard et al. 2011)."*           
+
+## Conclusion     
+
+I think this means we have two options:             
+
+  * use the distribution from the harvested data from @read1997 and @nielsen2013        
+  * reach out to Sveegaard and colleagues, and request the dataset - I am not sure of this is a possibility.    
+
+# References
