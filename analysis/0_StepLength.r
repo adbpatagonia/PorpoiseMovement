@@ -81,6 +81,8 @@ dists <-
 # turning angles ------
 angles <- data.table(angle = rvonmises(n = 10000, mu = 0, k = kap, control.circular=list(units="radians")))
 angles[, density := dvm(angles$angle, mu = 0, kappa = kap)]
+angles[, deg := angle * 180/pi]
+angles[, deg := ifelse(deg > 180, deg - 360, deg)]
 
 
 # plot -----
@@ -90,11 +92,13 @@ p.dists <- ggplot(data = dists, aes(x = disps/1000, color = Location)) +
   theme_classic() +
   theme(legend.position = "bottom")
 
-p.angles <- ggplot(data = angles, aes(x = angle, y = density)) +
+p.angles <- ggplot(data = angles, aes(x = deg, y = density)) +
   geom_line() +
-  xlab("Turning angle (radians)") +
-  # xlab(expression("Turning angle ("*pi*")")) +
-  ylim(0, max(angles$density) * 1.1) +
+  xlab("Turning angle") +
+  # xlab(expression("Turning angle (" *degree* ")")) +
+  # xlab(TeX("Turning angle ("$\\degree$")) +
+  scale_x_continuous(breaks = seq(-180, 180, 60)) +
+  ylim(0, max(angles$density) * 1.05) +
   theme_classic()
 
 # output -----
