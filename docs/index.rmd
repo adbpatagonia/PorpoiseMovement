@@ -2,7 +2,6 @@
 title: "SMRU Consulting. Porpoise movement"
 author: 'adb'
 date: "May 2024"
-
 output:
   html_document:
     collapsed: no
@@ -10,7 +9,7 @@ output:
     highlight: tango
     number_sections: yes
     smooth_scroll: yes
-    theme: jekyll-theme-slate
+    theme: spacelab
     toc: yes
     toc_float: yes
 ---
