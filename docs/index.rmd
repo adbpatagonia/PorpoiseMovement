@@ -2,6 +2,7 @@
 title: "SMRU Consulting. Porpoise movement"
 author: 'adb'
 date: "May 2024"
+theme: jekyll-theme-slate
 output:
   html_document:
     collapsed: no
