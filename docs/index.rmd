@@ -2,6 +2,7 @@
 title: "SMRU Consulting. Porpoise movement"
 author: 'adb'
 date: "May 2024"
+theme: jekyll-theme-slate
 output:
   html_document:
     collapsed: no
@@ -52,3 +53,4 @@ knitr::opts_chunk$set(warning = FALSE)
 This short document provides some details on the porpoise movement model developed as an alternative to assess harbour porpoise exposure to wind farms in the North Sea.
 
 Code and data to reproduce the analyses summarized in this document can be found in [**this repository**](https://github.com/adbpatagonia/PorpoiseMovement).
+
