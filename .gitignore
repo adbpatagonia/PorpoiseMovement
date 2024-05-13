@@ -5,3 +5,5 @@
 .DS_Store
 
 assets/OsparData.R
+
+rdata/
