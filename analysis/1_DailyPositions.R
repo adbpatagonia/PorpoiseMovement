@@ -38,11 +38,11 @@ source("R/compile_rmd.R")
 nburnin <- 0
 ## ncandidates ----
 # number of candidate new positions
-ncandidates <- 10
+ncandidates <- 100
 
 ## n agents ----
 # simulate n_agents whales
-n_agents <- 10
+n_agents <- 1000
 
 ## n areas ----
 # number of areas in which to divide the North Sea for step 1, i.e. choose initial position of agents
@@ -246,11 +246,12 @@ ran_angles_all <- suppressWarnings(
         dim = c(ncandidates, n_agents, ndays)))
 
 ## start loop over days ----
+i <- 0
 for (dy in (-nburnin + month_days$firstday[1] + 1):(month_days$firstday[1] + ndays - 1)){
+  i <- i + 1
   ###  switch  whale density  ----
   # switch the underlying whale density in the first day of each month
-  (print(dy))
-  # apply the switch only the first day of each month
+  # apply the switch only the first day of each season
   if(any(dy == year_month_days$firstday)){
     mh <- unique(year_month_days$month[which(dy == year_month_days$firstday)])
     this.mh <- switch(mh, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -290,10 +291,10 @@ for (dy in (-nburnin + month_days$firstday[1] + 1):(month_days$firstday[1] + nda
 
     # get the matrix n_agents*ncandidates of random step lengths, and shuffle them randomly
     # the shuffling is done to allow new values in each iteration of the while loop in case there are not enough random candidate positions
-    ran_steplength <- matrix(data = sample(ran_steplength_all[,,dy]),
+    ran_steplength <- matrix(data = sample(ran_steplength_all[,, i]),
                              nrow = ncandidates, ncol = n_agents)
     # get the matrix n_agents*ncandidates of random turning angles, and shuffle them randomly
-    ran_angles <- matrix(data = sample(ran_angles_all[,,dy]),
+    ran_angles <- matrix(data = sample(ran_angles_all[,, i]),
                          nrow = ncandidates, ncol = n_agents)
 
     ### create ncandidates positions ----
@@ -392,11 +393,13 @@ for (dy in (-nburnin + month_days$firstday[1] + 1):(month_days$firstday[1] + nda
 
   ## accumulate the results ----
 
-  if(dy < 1){
-    positions[((nburnin - abs(dy) - 1) * n_agents + 1):((nburnin - abs(dy)) * n_agents), day := dy]
-  }
+
+  # this needs to be fixed if we want to use a burn in
+  # if(dy < 1){
+  #   positions[((nburnin - abs(dy) - 1) * n_agents + 1):((nburnin - abs(dy))*n_agents), day := dy]
+  # }
   if(dy > 0){
-    positions[((dy - 1) * n_agents + 1 + n_agents * nburnin):(dy * n_agents +  n_agents * nburnin), day := dy]
+    positions[(i * n_agents + 1 + n_agents*nburnin):(i * n_agents +  n_agents + n_agents*nburnin), day := dy]
   }
 
   # positions[((dy-1) * n_agents + 1):(dy*n_agents), day := dy]
@@ -512,12 +515,12 @@ p.dists.travelled <- ggplot(data = distances %>%
   theme(legend.position = "none")
 
 # output ------
-# positions_trimmed[, size := NULL]
-# write.csv(x = positions_trimmed,
-#           file = "output/MonthlyDensities_simulation_100agents_100candidates.csv",
-#           row.names = FALSE)
+positions[, size := NULL]
+write.csv(x = positions,
+          file = "output/PP_positions.csv",
+          row.names = FALSE)
 
-save.image(file = 'rdata/MonthlyDensities_simulation_800agents_100candidates.rdata')
+save.image(file = 'rdata/PP_positions.rdata')
 # compile report
 # compile_rmd("SpermWhale_movement")
 
