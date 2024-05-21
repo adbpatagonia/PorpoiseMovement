@@ -303,4 +303,7 @@ path.animate.plot
 ```{r animate2, echo = FALSE, message = FALSE}
 path.animate.plot.2
 ```
+      
+
+
 # References
